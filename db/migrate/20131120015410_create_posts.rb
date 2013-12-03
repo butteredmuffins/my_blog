@@ -3,8 +3,10 @@ class CreatePosts < ActiveRecord::Migration
     create_table :posts do |t|
       t.string :title
       t.text :text
+      t.integer :user_id
 
       t.timestamps
     end
+    add_index :posts,[:user_id, :created_at]
   end
 end

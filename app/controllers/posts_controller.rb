@@ -1,14 +1,15 @@
 class PostsController < ApplicationController
-	
-	http_basic_authenticate_with name: "dhh", password: "secret", except: [:index, :show]
-
+      before_action :correct_user,   only: :destroy
 	def new
-		@post = Post.new
+		if user_signed_in?
+			@post = Post.new
+		else
+			redirect_to root_path
+		end
 	end
 
 	def create
-		@post = Post.new(params[:post].permit(:title, :text))
-
+		@post = current_user.posts.new(params[:post].permit(:title, :text, :created_at))
 		if @post.save
 		  redirect_to @post
 		else
@@ -25,13 +26,15 @@ class PostsController < ApplicationController
 	end
 
 	def edit
-		@post = Post.find(params[:id])
+		if user_signed_in?
+			@post = Post.find(params[:id])
+		end
 	end
 
 	def update
   		@post = Post.find(params[:id])
  
-  		if @post.update(params[:post].permit(:title, :text))
+  		if @post.update(params[:post].permit(:title, :text, :created_at))
     		redirect_to @post
   		else
     		render 'edit'
@@ -39,14 +42,24 @@ class PostsController < ApplicationController
 	end
 
 	def destroy
-		@post = Post.find(params[:id])
-		@post.destroy
+			@post = current_user.posts.find_by(id: params[:id])
+			@post.destroy
 
-		redirect_to posts_path
+			redirect_to posts_path
 	end
+
 	private
+	def correct_user
+      @post = current_user.posts.find_by(id: params[:id])
+      redirect_to root_url if @post.nil?
+    end
 
 	def post_params
 		params.require(:post).permit(:title, :text)
 	end
+	def require_login
+ 			unless signed_in?
+  			redirect_to root_url
+  		end
+  	end
 end

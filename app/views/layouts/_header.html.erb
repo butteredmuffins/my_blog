@@ -1,0 +1,29 @@
+<header class="navbar navbar-fixed-top navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container">
+      <%= link_to "My App", '#', id: "logo" %>
+      <nav>
+        <ul class="nav pull-right">
+          <li><%= link_to "Home", root_path %></li>
+          <li>
+            <% if user_signed_in? %>
+            <%= link_to current_user.email, edit_user_registration_path %>
+            <%end%>
+          </li>
+          <li>
+          <% if user_signed_in? %>
+          <%= link_to "Sign out", destroy_user_session_path, :method => :delete  %>
+          <% end %>
+          </li>
+          <li><% if !user_signed_in? %> 
+            <%= link_to "Sign in", user_session_path %>
+          </li>
+          <li><%= link_to "Sign up", new_user_registration_path %>
+            <% end %> 
+          </li>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
