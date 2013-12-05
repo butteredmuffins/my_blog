@@ -23,6 +23,19 @@ class CommentsController < ApplicationController
   	 redirect_to post_path(@post)
     end
   end
+  
+  def create
+   if @user_signed_in?
+     if @current_user.id == @comment.user_id
+       @post = current_user.posts.new(params[:post].permit(:title, :text, :created_at))
+       if @post.save
+         redirect_to @post
+       else
+         render 'new'
+       end
+      end
+    end
+  end
 
   private
 
