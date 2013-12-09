@@ -2,11 +2,12 @@ class CommentsController < ApplicationController
   before_action :correct_user,   only: :destroy
 
   def create
+
     if user_signed_in?
       @post = Post.find(params[:post_id])
       @comment = current_user.comments.create(params[:comment].permit(:body, :post_id))
       if @post.save
-        redirect_to root_path
+        redirect_to @post
       else
         redirect_to root_path
       end
@@ -16,11 +17,13 @@ class CommentsController < ApplicationController
   end
 
   def destroy
-    if user_signed_in?
+    if current_user.id == @comment.user_id
   	 @post = Post.find(params[:post_id])
   	 @comment = @post.comments.find(params[:id])
   	 @comment.destroy
-  	 redirect_to post_path(@post)
+  	 redirect_to @post
+    else 
+      redirect_to @post
     end
   end
 
